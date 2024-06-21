@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "horse_highway",
+  "version": "${version}",
+  "name": "Horse Highway",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Edgeburn Media"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Edgeburn/HorseHighwayFabric",
+    "sources": "https://github.com/Edgeburn/HorseHighwayFabric"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/horse_highway/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.edgeburnmedia.horsehighwayfabric.HorseHighway"
+    ],
+    "client": [
+      "com.edgeburnmedia.horsehighwayfabric.HorseHighwayClient"
+    ],
+    "cardinal-components": [
+      "com.edgeburnmedia.horsehighwayfabric.component.HorseHighwayComponents"
+    ]
+  },
+  "mixins": [
+    "horse_highway.mixins.json",
+    {
+      "config": "horse_highway.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.21",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  },
+  "custom": {
+    "cardinal-components": [
+      "horse_highway:original_speed"
+    ]
+  }
+}

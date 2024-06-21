@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.edgeburnmedia.horsehighwayfabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractHorseEntityMixin",
+    "EntityMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
