@@ -1,11 +1,9 @@
 {
-	"required": true,
-	"package": "com.edgeburnmedia.horsehighwayfabric.mixin.client",
-	"compatibilityLevel": "JAVA_21",
-	"client": [
-		"ExampleClientMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "com.edgeburnmedia.horsehighwayfabric.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

@@ -13,11 +13,15 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -28,12 +32,24 @@ public class HorseHighway implements ModInitializer {
     // That way, it's clear which mod wrote info, warnings, and errors.
     private static HorseHighway instance;
     private HorseHighwayConfig config;
+    /**
+     * Used so that the yaw snap doesn't bug out (as much) if the snap key is held during motion
+     */
+    private final ConcurrentHashMap<UUID, Integer> lastSnapTick = new ConcurrentHashMap<>();
 
     public static HorseHighway getInstance() {
         return instance;
     }
 
     public static float closest45DegreeAngle(float angle) {
+        // Normalize the angle first
+        angle = angle % 360.0f;
+        if (angle > 180.0f) {
+            angle -= 360.0f;
+        } else if (angle <= -180.0f) {
+            angle += 360.0f;
+        }
+
         // Define the 45-degree angles within the -180 to 180 range
         float[] angles = {-180.0f, -135.0f, -90.0f, -45.0f, 0.0f, 45.0f, 90.0f, 135.0f, 180.0f};
 
@@ -87,22 +103,16 @@ public class HorseHighway implements ModInitializer {
             ServerPlayerEntity player = context.player();
             CompletableFuture.supplyAsync(() -> closest45DegreeAngle(yaw)).thenAcceptAsync(f -> {
                 context.server().execute(() -> {
-                    if (player.getControllingVehicle() instanceof AbstractHorseEntity vehicle) {
-                        vehicle.setYaw(f);
+                    if (player.getControllingVehicle() instanceof AbstractHorseEntity && context.server().getTicks() - lastSnapTick.getOrDefault(player.getUuid(), 0) > 10) {
+                        player.setYaw(f);
+                        player.networkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), f, player.getPitch());
+                        player.playSoundToPlayer(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, 0.4f, 1f);
+                        lastSnapTick.put(player.getUuid(), context.server().getTicks());
                     }
                 });
             });
         });
 
-//        DefaultItemComponentEvents.MODIFY.register(context -> {
-//            context.modify(item -> {
-//                LOGGER.info("got here item {}", item);
-//                return true;
-//            }, (builder, item) -> {
-//                LOGGER.info("also got here item {}", item);
-//                builder.add(DataComponentTypes.LORE, new LoreComponent(List.of(Text.literal("Hello World!")))).build();
-//            });
-//        });
     }
 
     public HorseHighwayConfig getConfig() {
