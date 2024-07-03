@@ -35,7 +35,7 @@ public abstract class AbstractHorseEntityMixin {
 
     @Unique
     private void setupSpeed(AbstractHorseEntity horse) {
-        if (horse.getControllingPassenger() instanceof PlayerEntity) {
+        if (horse.getControllingPassenger() instanceof PlayerEntity && !horse.getEntityWorld().isClient()) {
             BlockState state = horse.getSteppingBlockState();
             Block block = state.getBlock();
             Identifier blockId = Registries.BLOCK.getId(block);
